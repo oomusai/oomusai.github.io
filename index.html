@@ -1,49 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      height: 100vh;
-      background-color: #f0f0f0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Textarea with List</title>
+    <style>
+        @font-face {
+            font-family: 'DinNext';
+            src: url('dinNext.otf') format('opentype');
+        }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #141F24;
+            font-family: 'DinNext', sans-serif;
+            color: #ffffff; /* text color */
+        }
 
-    .textbox {
-      width: 50%;
-      padding: 10px;
-      border: none;
-      border-radius: 10px 10px 5px 5px;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-    }
+        .center-container {
+            text-align: center;
+        }
 
-    .button {
-      width: 50%;
-      padding: 10px;
-      background-color: yellow;
-      border: none;
-      border-radius: 5px 5px 10px 10px;
-      color: #fff;
-      cursor: pointer;
-      box-sizing: border-box;
-    }
-  </style>
+        .input-box {
+            padding: 10px;
+            width: 50vw;
+            min-height: 25px; /* Set a minimum height to avoid collapsing when empty */
+            max-height: 25vh; /* Set the maximum height as needed */
+            overflow-y: auto;
+            background-color: #202F36;
+            border: 2px solid #384750;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'DinNext', sans-serif;
+            text-align: left;
+            color: #ffffff; /* text color */
+            margin-bottom: 20px; /* add some margin at the bottom */
+            resize: none; /* To prevent manual resizing of the textarea */
+            box-sizing: border-box; /* Ensure padding is included in the element's total height */
+            transition: height 0.3s; /* Add a transition for smooth height changes */
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50vw; /* Set the width to match the input box */
+            max-height: 100vh; /* Extend overflow to the top of the page */
+            overflow-y: auto; /* Enable vertical overflow */
+            margin-bottom: 20px; /* add some margin at the bottom */
+        }
+
+        .list-item {
+            width: 100%;
+            background-color: #202F36;
+            border: 2px solid #384750;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'DinNext', sans-serif;
+            color: #ffffff; /* text color */
+            margin-bottom: 10px;
+            padding: 10px;
+            box-sizing: border-box; /* Ensure padding is included in the element's total width */
+        }
+
+        .logo {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            max-width: 100px; /* Set the maximum width as needed */
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variables for placeholders
+            var people = ["I'm", "My sister is", "My grandfather is", "My friend is", "My colleague is", "My cousin is"];
+            var products = ["laptop", "phone", "smartwatch", "desk chair", "digital camera", "bucket hat", "shirt", "suitcase", "coffee machine", "blender", "diary", "journal"];
+            var lookoutSynonyms = ["on the lookout for", "in search of", "looking for", "seeking"];
+            var adjectives = ["new", "budget", "premium", "white", "black", "eco-friendly", "trendy", "easy to use"];
+            
+            var textarea = document.querySelector('.input-box');
+            var listContainer = document.querySelector('.list-container');
+
+            function getRandomItem(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+
+            function updatePlaceholder() {
+                var randomPerson = getRandomItem(people);
+                var randomProduct = getRandomItem(products);
+                var randomLookout = getRandomItem(lookoutSynonyms);
+                var randomAdjective = getRandomItem(adjectives);
+
+                var truncatedPlaceholder = `${randomPerson} ${randomLookout} a ${randomAdjective} ${randomProduct}...`;
+
+                textarea.setAttribute('placeholder', truncatedPlaceholder);
+            }
+
+            // Initial placeholder
+            updatePlaceholder();
+
+            setInterval(updatePlaceholder, 5000); // Update every 5 seconds
+
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight + 4) + 'px'; /* Adjusted for a small extra line height */
+            });
+
+            textarea.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent the default behavior of the Enter key (new line)
+                    // Check if the input box is not empty
+                    if (this.value.trim() !== '') {
+                        // Create a new list item
+                        var listItem = document.createElement('div');
+                        listItem.classList.add('list-item');
+                        listItem.textContent = this.value.trim(); // Add the trimmed content of the textarea
+                        listContainer.appendChild(listItem);
+
+                        // Clear the textarea
+                        this.value = '';
+                        this.style.height = (this.scrollHeight + 4) + 'px'; /* Adjusted for a small extra line height */
+
+                        // Scroll the list to the bottom
+                        listContainer.scrollTop = listContainer.scrollHeight;
+                    }
+                }
+            });
+
+            // Trigger initial adjustment
+            textarea.dispatchEvent(new Event('input'));
+        });
+    </script>
 </head>
 <body>
-  <div class="container">
-    <input type="text" class="textbox" placeholder="Type here...">
-    <button class="button">Submit</button>
-  </div>
+    <img class="logo" src="logo.png" alt="Logo">
+    <div class="list-container"></div>
+    <div class="center-container">
+        <textarea class="input-box"></textarea>
+    </div>
 </body>
 </html>
